@@ -1,6 +1,7 @@
 package de.schauderhaft.databasecharacterizationtests;
 
 import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
+import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
 import org.h2.api.TimestampWithTimeZone;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
