@@ -24,6 +24,10 @@ public class ValueChange<S,T> implements FailureAssertion<S>{
 
 	Function<S, T> transformation;
 
+	public static <S,T> ValueChange<S,T> changesValue(Function<S, T> transformation) {
+		return new ValueChange<>(transformation);
+	}
+
 	public ValueChange(Function<S, T> transformation) {
 		this.transformation = transformation;
 	}

@@ -24,11 +24,11 @@ public class Fixture<T> {
 	public final FailureAssertion<T> failureAssertion;
 
 	public static <T> Fixture<T> f(String database) {
-		return new Fixture(database, null);
+		return new Fixture<>(database, null);
 	}
 
 	public static <T> Fixture<T> f(String database, FailureAssertion<T> failureAssertion) {
-		return new Fixture(database, failureAssertion);
+		return new Fixture<>(database, failureAssertion);
 	}
 
 	public Fixture(String database, FailureAssertion<T> failureAssertion) {

@@ -1,9 +1,7 @@
 package de.schauderhaft.databasecharacterizationtests;
 
-import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
 import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
 import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
-import de.schauderhaft.databasecharacterizationtests.fixture.ValueChange;
 import org.h2.api.TimestampWithTimeZone;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,10 +14,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.function.BiConsumer;
 
-import static de.schauderhaft.databasecharacterizationtests.InsertAndReadDates.GetObjectOffsetDateTimeFixture.*;
 import static de.schauderhaft.databasecharacterizationtests.fixture.Fixture.*;
+import static de.schauderhaft.databasecharacterizationtests.fixture.ValueChange.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
@@ -28,7 +25,7 @@ class InsertAndReadDates {
 
 	@ParameterizedTest
 	@MethodSource("getObjectSource")
-	void getObject(Fixture fixture) {
+	void getObject(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
@@ -49,55 +46,20 @@ class InsertAndReadDates {
 			assertThat(reloaded).isEqualTo(value);
 	}
 
-	static List<Fixture> getObjectSource() {
+	static List<Fixture<OffsetDateTime>> getObjectSource() {
 		return asList(
-				f("h2", new DescriptiveAssertion<OffsetDateTime>("H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class))),
+				f("h2", new DescriptiveAssertion<>("H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class))),
 				f("hsql"),
-				f("postgres", new ValueChange<OffsetDateTime, Timestamp>(
+				f("postgres", changesValue(
 						exp -> Timestamp.from(
 								exp.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
 										.toInstant())
-						)));
-	}
-
-	static class GetObjectFixture {
-
-		final String database;
-		final String comment;
-		final BiConsumer<OffsetDateTime, Object> failureAssertion;
-
-		static GetObjectFixture f(String database) {
-			return new GetObjectFixture(database);
-		}
-
-		static GetObjectFixture f(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
-			return new GetObjectFixture(database, comment, failureAssertion);
-		}
-
-		public GetObjectFixture(String database) {
-			this.database = database;
-			this.comment = null;
-			this.failureAssertion = null;
-		}
-
-		public GetObjectFixture(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
-			this.database = database;
-			this.comment = comment;
-			this.failureAssertion = failureAssertion;
-		}
-
-		private NamedParameterJdbcTemplate template() {
-			return new NamedParameterJdbcTemplate(DataSources.get(database));
-		}
-
-		public boolean fails() {
-			return failureAssertion != null;
-		}
+				)));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getObjectOffsetDateTimeSource")
-	void getObjectOffsetDateTime(GetObjectOffsetDateTimeFixture fixture) {
+	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
@@ -113,65 +75,24 @@ class InsertAndReadDates {
 		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY2", emptyMap(), (rs, i) -> rs.getObject(1, OffsetDateTime.class));
 
 		if (fixture.fails()) {
-			fixture.failureAssertion.accept(value, reloaded);
+			fixture.failureAssertion.assertFailure(value, reloaded);
 		} else {
 			assertThat(reloaded).isEqualTo(value);
 		}
 	}
 
-	static List<GetObjectOffsetDateTimeFixture> getObjectOffsetDateTimeSource() {
+	static List<Fixture<OffsetDateTime>> getObjectOffsetDateTimeSource() {
+
 		return asList(
-				f2("h2"),
-				f2("hsql"),
-				f2("postgres", "Postgres looses precision and the timezone",
-						(exp, v) -> assertThat(v)
-								.isEqualTo(
-										OffsetDateTime.of(
-												exp
-														.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
-														.toLocalDateTime().withHour(exp.getHour() - exp.getOffset().get(ChronoField.OFFSET_SECONDS) / 3600),
-												ZoneOffset.UTC
-										)
-								)
+				f("h2"),
+				f("hsql"),
+				f("postgres", changesValue(
+						exp -> OffsetDateTime.of(
+								exp.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
+										.toLocalDateTime().withHour(exp.getHour() - exp.getOffset().get(ChronoField.OFFSET_SECONDS) / 3600),
+								ZoneOffset.UTC
+						))
 				)
 		);
 	}
-
-
-	static class GetObjectOffsetDateTimeFixture {
-
-		final String database;
-		final String comment;
-		final BiConsumer<OffsetDateTime, Object> failureAssertion;
-
-		static GetObjectOffsetDateTimeFixture f2(String database) {
-			return new GetObjectOffsetDateTimeFixture(database);
-		}
-
-		static GetObjectOffsetDateTimeFixture f2(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
-			return new GetObjectOffsetDateTimeFixture(database, comment, failureAssertion);
-		}
-
-		public GetObjectOffsetDateTimeFixture(String database) {
-			this.database = database;
-			this.comment = null;
-			this.failureAssertion = null;
-		}
-
-		public GetObjectOffsetDateTimeFixture(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
-			this.database = database;
-			this.comment = comment;
-			this.failureAssertion = failureAssertion;
-		}
-
-		private NamedParameterJdbcTemplate template() {
-			return new NamedParameterJdbcTemplate(DataSources.get(database));
-		}
-
-		public boolean fails() {
-			return failureAssertion != null;
-		}
-	}
-
-
 }
