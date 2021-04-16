@@ -21,13 +21,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 public class Fixture<T> {
 
 	final String database;
-	final FailureAssertion<T> failureAssertion;
+	public final FailureAssertion<T> failureAssertion;
 
-	static <T> Fixture<T> f(String database) {
+	public static <T> Fixture<T> f(String database) {
 		return new Fixture(database, null);
 	}
 
-	static <T> Fixture<T> f(String database, FailureAssertion<T> failureAssertion) {
+	public static <T> Fixture<T> f(String database, FailureAssertion<T> failureAssertion) {
 		return new Fixture(database, failureAssertion);
 	}
 
@@ -36,7 +36,7 @@ public class Fixture<T> {
 		this.failureAssertion = failureAssertion;
 	}
 
-	private NamedParameterJdbcTemplate template() {
+	public NamedParameterJdbcTemplate template() {
 		return new NamedParameterJdbcTemplate(DataSources.get(database));
 	}
 

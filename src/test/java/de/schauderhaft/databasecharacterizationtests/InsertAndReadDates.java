@@ -1,7 +1,9 @@
 package de.schauderhaft.databasecharacterizationtests;
 
 import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
+import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
 import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
+import de.schauderhaft.databasecharacterizationtests.fixture.ValueChange;
 import org.h2.api.TimestampWithTimeZone;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,12 +15,11 @@ import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static de.schauderhaft.databasecharacterizationtests.InsertAndReadDates.GetObjectFixture.*;
 import static de.schauderhaft.databasecharacterizationtests.InsertAndReadDates.GetObjectOffsetDateTimeFixture.*;
+import static de.schauderhaft.databasecharacterizationtests.fixture.Fixture.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
@@ -27,7 +28,7 @@ class InsertAndReadDates {
 
 	@ParameterizedTest
 	@MethodSource("getObjectSource")
-	void getObject(GetObjectFixture fixture) {
+	void getObject(Fixture fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
@@ -43,19 +44,18 @@ class InsertAndReadDates {
 		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY1", emptyMap(), (rs, i) -> rs.getObject(1));
 
 		if (fixture.fails())
-			fixture.failureAssertion.accept(value, reloaded);
+			fixture.failureAssertion.assertFailure(value, reloaded);
 		else
 			assertThat(reloaded).isEqualTo(value);
 	}
 
-	static List<GetObjectFixture> getObjectSource() {
+	static List<Fixture> getObjectSource() {
 		return asList(
-				f("h2", "H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class)),
+				f("h2", new DescriptiveAssertion<OffsetDateTime>("H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class))),
 				f("hsql"),
-				f("postgres", "Postgres returns a Timestamp, looses precision on the way and the timezone (in a weird way)",
-						(exp, v) -> assertThat(v).isEqualTo(Timestamp.from(
-								exp
-										.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
+				f("postgres", new ValueChange<OffsetDateTime, Timestamp>(
+						exp -> Timestamp.from(
+								exp.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
 										.toInstant())
 						)));
 	}
@@ -129,7 +129,7 @@ class InsertAndReadDates {
 										OffsetDateTime.of(
 												exp
 														.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
-														.toLocalDateTime().withHour(exp.getHour() - exp.getOffset().get(ChronoField.OFFSET_SECONDS)/3600),
+														.toLocalDateTime().withHour(exp.getHour() - exp.getOffset().get(ChronoField.OFFSET_SECONDS) / 3600),
 												ZoneOffset.UTC
 										)
 								)
