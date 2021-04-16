@@ -1,90 +1,44 @@
 package de.schauderhaft.databasecharacterizationtests;
 
-import org.junit.jupiter.api.Nested;
+import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Collections;
-import java.util.Map;
 
 import static java.util.Collections.*;
+import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
 class InsertAndReadDates {
 
-	@Nested
-	class H2 {
+	@ParameterizedTest
+	@ValueSource(strings = {"h2", "hsql", "postgres"})
+	void contextLoads(String dataBaseName) {
 
-		@Autowired
-		@Qualifier("h2")
-		NamedParameterJdbcTemplate jdbc;
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(DataSources.get(dataBaseName));
+		jdbc.getJdbcOperations()
+				.execute("CREATE TABLE DUMMY (VALUE TIMESTAMP(9) WITH TIME ZONE)");
 
-		@Test
-		void contextLoads() {
-			jdbc.getJdbcOperations()
-					.execute("CREATE TABLE DUMMY (TIMESTAMP TIMESTAMP)");
+		OffsetDateTime value = OffsetDateTime.of(2005, 5, 5, 5, 5, 5, 123456789, ZoneOffset.ofHours(5));
 
-		}
+
+		MapSqlParameterSource parameters = new MapSqlParameterSource("value", value);
+		parameters.registerSqlType("pit", Types.TIMESTAMP_WITH_TIMEZONE);
+		jdbc.update("INSERT INTO DUMMY VALUES (:value)", parameters);
+
+		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY", emptyMap(), OffsetDateTime.class);
+
+		assertThat(reloaded).isEqualTo(value);
 	}
-
-	@Nested
-	class HsqlDb {
-
-		@Autowired
-		@Qualifier("hsqldb")
-		NamedParameterJdbcTemplate jdbc;
-
-		@Test
-		void contextLoads() {
-			jdbc.getJdbcOperations()
-					.execute("CREATE TABLE DUMMY (TIMESTAMP TIMESTAMP)");
-
-			Instant pointInTime = LocalDateTime.of(2005, 5, 5, 5, 5, 5, 123456789).toInstant(ZoneOffset.UTC);
-			Timestamp pitTs = Timestamp.from(pointInTime);
-			System.out.println(pitTs);
-
-			MapSqlParameterSource parameters = new MapSqlParameterSource("pit", pitTs);
-			parameters.registerSqlType("pit", Types.TIMESTAMP);
-			jdbc.update("insert into dummy values (:pit)", parameters);
-
-			Object reloaded = jdbc.queryForObject("select timestamp from dummy", emptyMap(), Object.class);
-
-			System.out.println(reloaded);
-			System.out.println(reloaded.getClass());
-		}
-
-		@Test
-		void timestamps() {
-			Instant now = Instant.now();
-			Timestamp from = Timestamp.from(now);
-			Timestamp fromMillis = new Timestamp(now.toEpochMilli());
-
-
-			System.out.println("now    " + now);
-			System.out.println("from   " + from);
-			System.out.println("fromMi " + fromMillis);
-
-			System.out.println("now    ms " + now.toEpochMilli());
-			System.out.println("from   ms " + from.getTime());
-			System.out.println("fromMi ms " + fromMillis.getTime());
-
-
-		}
-	}
-
-
 }
