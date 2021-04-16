@@ -11,11 +11,13 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static de.schauderhaft.databasecharacterizationtests.InsertAndReadDates.GetObjectFixture.*;
+import static de.schauderhaft.databasecharacterizationtests.InsertAndReadDates.GetObjectOffsetDateTimeFixture.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
@@ -47,14 +49,14 @@ class InsertAndReadDates {
 
 	static List<GetObjectFixture> getObjectSource() {
 		return asList(
-				f("h2", "H2 returns a non standard type", (__,v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class)),
+				f("h2", "H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class)),
 				f("hsql"),
 				f("postgres", "Postgres returns a Timestamp, looses precision on the way and the timezone (in a weird way)",
 						(exp, v) -> assertThat(v).isEqualTo(Timestamp.from(
-						exp
-						.withNano(((int)Math.round(exp.getNano()/ 1_000.0))*1_000) // only millisecond precision
-						.toInstant())
-				)));
+								exp
+										.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
+										.toInstant())
+						)));
 	}
 
 	static class GetObjectFixture {
@@ -94,9 +96,9 @@ class InsertAndReadDates {
 
 	@ParameterizedTest
 	@MethodSource("getObjectOffsetDateTimeSource")
-	void getObjectOffsetDateTime(String dataBaseName) {
+	void getObjectOffsetDateTime(GetObjectOffsetDateTimeFixture fixture) {
 
-		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(DataSources.get(dataBaseName));
+		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
 				.execute("CREATE TABLE DUMMY2 (VALUE TIMESTAMP(9) WITH TIME ZONE)");
 
@@ -109,11 +111,65 @@ class InsertAndReadDates {
 
 		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY2", emptyMap(), (rs, i) -> rs.getObject(1, OffsetDateTime.class));
 
-		assertThat(reloaded).isEqualTo(value);
+		if (fixture.fails()) {
+			fixture.failureAssertion.accept(value, reloaded);
+		} else {
+			assertThat(reloaded).isEqualTo(value);
+		}
 	}
 
-	static List<String> getObjectOffsetDateTimeSource() {
-		return asList("h2", "hsql", "postgres");
+	static List<GetObjectOffsetDateTimeFixture> getObjectOffsetDateTimeSource() {
+		return asList(
+				f2("h2"),
+				f2("hsql"),
+				f2("postgres", "Postgres looses precision and the timezone",
+						(exp, v) -> assertThat(v)
+								.isEqualTo(
+										OffsetDateTime.of(
+												exp
+														.withNano(((int) Math.round(exp.getNano() / 1_000.0)) * 1_000)
+														.toLocalDateTime().withHour(exp.getHour() - exp.getOffset().get(ChronoField.OFFSET_SECONDS)/3600),
+												ZoneOffset.UTC
+										)
+								)
+				)
+		);
+	}
+
+
+	static class GetObjectOffsetDateTimeFixture {
+
+		final String database;
+		final String comment;
+		final BiConsumer<OffsetDateTime, Object> failureAssertion;
+
+		static GetObjectOffsetDateTimeFixture f2(String database) {
+			return new GetObjectOffsetDateTimeFixture(database);
+		}
+
+		static GetObjectOffsetDateTimeFixture f2(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
+			return new GetObjectOffsetDateTimeFixture(database, comment, failureAssertion);
+		}
+
+		public GetObjectOffsetDateTimeFixture(String database) {
+			this.database = database;
+			this.comment = null;
+			this.failureAssertion = null;
+		}
+
+		public GetObjectOffsetDateTimeFixture(String database, String comment, BiConsumer<OffsetDateTime, Object> failureAssertion) {
+			this.database = database;
+			this.comment = comment;
+			this.failureAssertion = failureAssertion;
+		}
+
+		private NamedParameterJdbcTemplate template() {
+			return new NamedParameterJdbcTemplate(DataSources.get(database));
+		}
+
+		public boolean fails() {
+			return failureAssertion != null;
+		}
 	}
 
 

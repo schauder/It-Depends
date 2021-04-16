@@ -29,7 +29,7 @@ public class PostgreSqlDataSourceFactory extends DataSourceFactory {
 
 		if (POSTGRESQL_CONTAINER == null) {
 
-			PostgreSQLContainer<?> container = new PostgreSQLContainer<>();
+			PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:13.2");
 			container.start();
 
 			POSTGRESQL_CONTAINER = container;
