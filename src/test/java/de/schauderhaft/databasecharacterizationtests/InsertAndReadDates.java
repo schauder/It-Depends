@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 class InsertAndReadDates {
 
 	@ParameterizedTest
-	@MethodSource("getObjectSource")
+	@MethodSource
 	void getObject(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
@@ -46,7 +46,7 @@ class InsertAndReadDates {
 			assertThat(reloaded).isEqualTo(value);
 	}
 
-	static List<Fixture<OffsetDateTime>> getObjectSource() {
+	static List<Fixture<OffsetDateTime>> getObject() {
 		return asList(
 				f("h2", new DescriptiveAssertion<>("H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class))),
 				f("hsql"),
@@ -58,7 +58,7 @@ class InsertAndReadDates {
 	}
 
 	@ParameterizedTest
-	@MethodSource("getObjectOffsetDateTimeSource")
+	@MethodSource
 	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
@@ -81,7 +81,7 @@ class InsertAndReadDates {
 		}
 	}
 
-	static List<Fixture<OffsetDateTime>> getObjectOffsetDateTimeSource() {
+	static List<Fixture<OffsetDateTime>> getObjectOffsetDateTime() {
 
 		return asList(
 				f("h2"),
