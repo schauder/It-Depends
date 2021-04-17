@@ -3,6 +3,7 @@ package de.schauderhaft.databasecharacterizationtests;
 import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
 import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
 import org.h2.api.TimestampWithTimeZone;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,10 +22,12 @@ import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 
-class InsertAndReadDates {
+class InsertAndReadOffsetDateTime {
 
 	@ParameterizedTest
 	@MethodSource
+	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
+			"and read it back using `Resultset.getObject(int)`")
 	void getObject(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
@@ -59,6 +62,8 @@ class InsertAndReadDates {
 
 	@ParameterizedTest
 	@MethodSource
+	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
+			"and read it back using `Resultset.getObject(int, OffsetDateTime.class)`")
 	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();

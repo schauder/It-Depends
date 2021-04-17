@@ -17,6 +17,11 @@ package de.schauderhaft.databasecharacterizationtests.fixture;
 
 import java.util.function.BiConsumer;
 
+/**
+ * A {@link de.schauderhaft.databasecharacterizationtests.fixture.FailureAssertion} with explicitly provided description and {@link FailureAssertion}.
+ *
+ * @param <T> type of the normally expected result.
+ */
 public class DescriptiveAssertion<T> implements FailureAssertion<T> {
 
 	private final String description;

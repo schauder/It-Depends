@@ -20,6 +20,11 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * A {@link FailureAssertion} that can be described as a transformation of the normal expected value.
+ * @param <S> type of the normal expected result.
+ * @param <T> type of the actual result.
+ */
 public class ValueChange<S,T> implements FailureAssertion<S>{
 
 	Function<S, T> transformation;

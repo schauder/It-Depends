@@ -15,8 +15,20 @@
  */
 package de.schauderhaft.databasecharacterizationtests.fixture;
 
+/**
+ * Provides a test for what exactly is the result of a {@link Fixture} if does not deliver the "normal" result.
+ *
+ * @param <T> the type of the normal result.
+ */
 public interface FailureAssertion<T> {
 
-	public String description(T value);
-	public void assertFailure(T exp, Object actual);
+	/**
+	 * a textual description of what happens in the fixture
+	 */
+	String description(T value);
+
+	/**
+	 * asserts that the result of the {@link Fixture} is it exactly what is expected by using AssertJ assertions.
+	 */
+	void assertFailure(T exp, Object actual);
 }

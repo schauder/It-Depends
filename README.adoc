@@ -1,0 +1,16 @@
+== It depends
+
+When you work with Java and RDBMS "It depends." is the correct answer for a lot of things. How to achieve a certain thing depends typical on
+
+* the type of RDBMS you are using
+* the version of the RDBMS
+* the configuration of the RDBMS
+* the JDBC driver
+* it's version
+* and lots of intricate details of how to use the JDBC API.
+
+With lots of googling you probably can find out about these things. But wouldn't it be nice to have a single place where can find all these variants, complete with example code?
+
+This project tries to achieve this.
+It has infrastructure to run a test in many different variants against many different databases.
+And it will collect a growing collection of these tests and hopefully eventually publish them to a website.

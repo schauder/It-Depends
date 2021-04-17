@@ -18,6 +18,11 @@ package de.schauderhaft.databasecharacterizationtests.fixture;
 import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+/**
+ * A basic fixture for a test, specifying the database to run with and the expected result of the operation under test.
+ * @param <T> the type of the expected result.
+ */
+
 public class Fixture<T> {
 
 	final String database;
