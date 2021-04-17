@@ -2,6 +2,7 @@ package de.schauderhaft.databasecharacterizationtests;
 
 import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
 import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
+import de.schauderhaft.databasecharacterizationtests.support.DbTest;
 import de.schauderhaft.databasecharacterizationtests.support.TableName;
 import de.schauderhaft.databasecharacterizationtests.support.TableNameParameterResolver;
 import org.h2.api.TimestampWithTimeZone;
@@ -27,23 +28,21 @@ import static org.assertj.core.api.Assertions.*;
 
 class InsertAndReadOffsetDateTime {
 
-	@ParameterizedTest
-	@MethodSource
-	@ExtendWith(TableNameParameterResolver.class)
+	@DbTest
 	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
 			"and read it back using `Resultset.getObject(int)`")
 	void getObject(Fixture<OffsetDateTime> fixture, TableName table) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
-				.execute(String.format("CREATE TABLE %s (VALUE TIMESTAMP(9) WITH TIME ZONE)",table));
+				.execute(String.format("CREATE TABLE %s (VALUE TIMESTAMP(9) WITH TIME ZONE)", table));
 
 		OffsetDateTime value = OffsetDateTime.of(2005, 5, 5, 5, 5, 5, 123456789, ZoneOffset.ofHours(5));
 
 
 		MapSqlParameterSource parameters = new MapSqlParameterSource("value", value);
 		parameters.registerSqlType("value", Types.TIMESTAMP_WITH_TIMEZONE);
-		jdbc.update(String.format("INSERT INTO %s VALUES (:value)",table), parameters);
+		jdbc.update(String.format("INSERT INTO %s VALUES (:value)", table), parameters);
 
 		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM " + table, emptyMap(), (rs, i) -> rs.getObject(1));
 
@@ -64,9 +63,8 @@ class InsertAndReadOffsetDateTime {
 				)));
 	}
 
-	@ParameterizedTest
-	@MethodSource
-	@ExtendWith(TableNameParameterResolver.class)
+
+	@DbTest
 	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
 			"and read it back using `Resultset.getObject(int, OffsetDateTime.class)`")
 	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture, TableName table) {
