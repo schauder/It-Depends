@@ -2,8 +2,11 @@ package de.schauderhaft.databasecharacterizationtests;
 
 import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
 import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
+import de.schauderhaft.databasecharacterizationtests.support.TableName;
+import de.schauderhaft.databasecharacterizationtests.support.TableNameParameterResolver;
 import org.h2.api.TimestampWithTimeZone;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,22 +29,23 @@ class InsertAndReadOffsetDateTime {
 
 	@ParameterizedTest
 	@MethodSource
+	@ExtendWith(TableNameParameterResolver.class)
 	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
 			"and read it back using `Resultset.getObject(int)`")
-	void getObject(Fixture<OffsetDateTime> fixture) {
+	void getObject(Fixture<OffsetDateTime> fixture, TableName table) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
-				.execute("CREATE TABLE DUMMY1 (VALUE TIMESTAMP(9) WITH TIME ZONE)");
+				.execute(String.format("CREATE TABLE %s (VALUE TIMESTAMP(9) WITH TIME ZONE)",table));
 
 		OffsetDateTime value = OffsetDateTime.of(2005, 5, 5, 5, 5, 5, 123456789, ZoneOffset.ofHours(5));
 
 
 		MapSqlParameterSource parameters = new MapSqlParameterSource("value", value);
 		parameters.registerSqlType("value", Types.TIMESTAMP_WITH_TIMEZONE);
-		jdbc.update("INSERT INTO DUMMY1 VALUES (:value)", parameters);
+		jdbc.update(String.format("INSERT INTO %s VALUES (:value)",table), parameters);
 
-		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY1", emptyMap(), (rs, i) -> rs.getObject(1));
+		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM " + table, emptyMap(), (rs, i) -> rs.getObject(1));
 
 		if (fixture.fails())
 			fixture.failureAssertion.assertFailure(value, reloaded);
@@ -62,22 +66,23 @@ class InsertAndReadOffsetDateTime {
 
 	@ParameterizedTest
 	@MethodSource
+	@ExtendWith(TableNameParameterResolver.class)
 	@DisplayName("Write a `OffsetDateTime` to a column of type **TIMESTAMP WITH TIME ZONE**\n" +
 			"and read it back using `Resultset.getObject(int, OffsetDateTime.class)`")
-	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture) {
+	void getObjectOffsetDateTime(Fixture<OffsetDateTime> fixture, TableName table) {
 
 		NamedParameterJdbcTemplate jdbc = fixture.template();
 		jdbc.getJdbcOperations()
-				.execute("CREATE TABLE DUMMY2 (VALUE TIMESTAMP(9) WITH TIME ZONE)");
+				.execute(String.format("CREATE TABLE %s (VALUE TIMESTAMP(9) WITH TIME ZONE)", table));
 
 		OffsetDateTime value = OffsetDateTime.of(2005, 5, 5, 5, 5, 5, 123456789, ZoneOffset.ofHours(5));
 
 
 		MapSqlParameterSource parameters = new MapSqlParameterSource("value", value);
 		parameters.registerSqlType("value", Types.TIMESTAMP_WITH_TIMEZONE);
-		jdbc.update("INSERT INTO DUMMY2 VALUES (:value)", parameters);
+		jdbc.update(String.format("INSERT INTO %s VALUES (:value)", table), parameters);
 
-		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM DUMMY2", emptyMap(), (rs, i) -> rs.getObject(1, OffsetDateTime.class));
+		Object reloaded = jdbc.queryForObject("SELECT VALUE FROM " + table, emptyMap(), (rs, i) -> rs.getObject(1, OffsetDateTime.class));
 
 		if (fixture.fails()) {
 			fixture.failureAssertion.assertFailure(value, reloaded);
