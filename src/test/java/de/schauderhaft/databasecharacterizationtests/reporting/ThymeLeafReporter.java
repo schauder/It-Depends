@@ -74,8 +74,7 @@ public class ThymeLeafReporter implements TestExecutionListener {
 			Context context = new Context();
 
 			String displayName = testIdentifier.getDisplayName();
-			System.out.println(displayName);
-			context.setVariable("test-name", displayName);
+			context.setVariable("testName", displayName);
 
 
 			templateEngine.process("execution", context, createWriter(fileName));
