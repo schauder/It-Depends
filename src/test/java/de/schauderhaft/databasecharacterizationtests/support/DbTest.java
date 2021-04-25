@@ -15,6 +15,7 @@
  */
 package de.schauderhaft.databasecharacterizationtests.support;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,6 +29,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ParameterizedTest
 @MethodSource
+@Tag("reporting")
 @ExtendWith(TableNameParameterResolver.class)
 public @interface DbTest {
 }

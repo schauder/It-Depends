@@ -18,7 +18,7 @@ import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 
-class RetrieveGeneratedDataAfterInsert {
+public class RetrieveGeneratedDataAfterInsertTest {
 
 	@DbTest
 	@DisplayName("Can a single generated value be retrieved from the database.")
