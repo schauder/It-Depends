@@ -1,0 +1,27 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>It depends!</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+
+<h1>It depends. SQL and JDBC differences automatically documented</h1>
+
+<p><b>It depends</b> is a collection of tests that run against a variety of databases and documents their results in this website</p>
+
+<h2>List of tests</h2>
+<div th:each="test : ${tests}"></div>
+<h3 th:text="${test.name}">Test Name</h3>
+<p th:text="${test.description}>A longer description of the test</p>
+<p>
+<a href="/execution.xhtml">Details</a>
+</p>
+</div>
+</body>
+
+</html>
