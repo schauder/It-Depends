@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static de.schauderhaft.databasecharacterizationtests.fixture.ValueChange.*;
@@ -35,14 +36,15 @@ class RetrieveGeneratedDataAfterInsert {
 		if (fixture.fails())
 			fixture.failureAssertion.assertFailure(1, generatedKey);
 		else
-			assertThat(generatedKey).isIn(1);
+			assertThat(generatedKey).isEqualTo(1);
 	}
 
 	static List<IdGenerationFixture> retrieveAfterInsertWithDefault() {
 		return asList(
 				f("h2", "INTEGER IDENTITY"),
 				f("hsql", "INTEGER IDENTITY", changesValue((act) -> 0)),
-				f("postgres", "SERIAL")
+				f("postgres", "SERIAL"),
+				f("mysql", "SERIAL", changesValue(act -> BigInteger.valueOf(act.longValue())))
 		);
 	}
 

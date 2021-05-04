@@ -15,24 +15,31 @@
  */
 package de.schauderhaft.databasecharacterizationtests.datasource;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
+import org.testcontainers.containers.MySQLContainer;
+
 import javax.sql.DataSource;
-import java.util.Map;
-import java.util.Optional;
 
-public class DataSources {
+public class MySqlDataSourceFactory extends DataSourceFactory {
 
-	static Map<String, DataSourceFactory> dataSourceFactories = Map.of(
-			"h2", new H2DataSourceFactory(),
-			"hsql", new HsqlDbDataSourceFactory(),
-			"postgres", new PostgreSqlDataSourceFactory(),
-			"mysql", new MySqlDataSourceFactory()
-	);
+	private static MySQLContainer<?> MYSQL_CONTAINER;
 
-	public static DataSource get(String name) {
+	@Override
+	DataSource createDataSource() {
 
-		return Optional.ofNullable(dataSourceFactories.get(name))
-				.orElseThrow(() -> new IllegalArgumentException(String.format("No data source factory found named %s", name)))
-				.getDataSource();
+		if (MYSQL_CONTAINER == null) {
 
+			MySQLContainer<?> container = new MySQLContainer<>("mysql:8.0.24");
+			container.start();
+
+			MYSQL_CONTAINER = container;
+		}
+
+		MysqlDataSource dataSource = new MysqlDataSource();
+		dataSource.setUrl(MYSQL_CONTAINER.getJdbcUrl());
+		dataSource.setUser(MYSQL_CONTAINER.getUsername());
+		dataSource.setPassword(MYSQL_CONTAINER.getPassword());
+
+		return dataSource;
 	}
 }
