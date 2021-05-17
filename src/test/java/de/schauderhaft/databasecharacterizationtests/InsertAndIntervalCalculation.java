@@ -30,10 +30,7 @@ public class InsertAndIntervalCalculation {
 		jdbc.getJdbcOperations()
 				.execute(String.format("CREATE TABLE %s (VALUE TIMESTAMP)", table));
 
-		OffsetDateTime value = OffsetDateTime.of(2005, 5, 5, 5, 5, 5, 123456789, ZoneOffset.ofHours(5));
-
-
-		MapSqlParameterSource parameters = new MapSqlParameterSource("value", value);
+		MapSqlParameterSource parameters = new MapSqlParameterSource("value", fixture.dateLikeValue);
 		if (fixture.jdbcTypeValue != null) {
 			parameters.registerSqlType("value", fixture.jdbcTypeValue);
 		}
@@ -56,14 +53,14 @@ public class InsertAndIntervalCalculation {
 		return asList(
 //				f("h2", new DescriptiveAssertion<>("H2 returns a non standard type", (__, v) -> assertThat(v).isInstanceOf(TimestampWithTimeZone.class))),
 //				f("hsql"),
-				f("postgres", new ExceptionAssertion<>(NumberFormatException.class, "Trailing junk on timestamp"), LocalDateTime.now(), Types.TIMESTAMP),
+				f("postgres",  LocalDateTime.now(), Types.TIMESTAMP),
 				f("postgres", new ExceptionAssertion<>(PSQLException.class, "ERROR: column \"value\" is of type timestamp without time zone but expression is of type interval"), LocalDateTime.now(), Types.OTHER),
 				f("postgres", new ExceptionAssertion<>(PSQLException.class, "Unsupported Types value: 0"), LocalDateTime.now(), Types.NULL),
 				f("postgres", LocalDateTime.now(), null),
-				f("postgres", new ExceptionAssertion<>(NumberFormatException.class, "Trailing junk on timestamp"), Timestamp.from(Instant.now()), Types.TIMESTAMP),
+				f("postgres", new ExceptionAssertion<>(PSQLException.class, "ERROR: column \"value\" is of type timestamp without time zone but expression is of type interval"), Timestamp.from(Instant.now()), Types.TIMESTAMP),
 				f("postgres", new ExceptionAssertion<>(PSQLException.class, "ERROR: column \"value\" is of type timestamp without time zone but expression is of type interval"), Timestamp.from(Instant.now()), Types.OTHER),
 				f("postgres", new ExceptionAssertion<>(PSQLException.class, "Unsupported Types value: 0"), Timestamp.from(Instant.now()), Types.NULL),
-				f("postgres", Timestamp.from(Instant.now()), null)
+				f("postgres", new ExceptionAssertion<>(PSQLException.class, "ERROR: column \"value\" is of type timestamp without time zone but expression is of type interval"), Timestamp.from(Instant.now()), null)
 //				f("mysql",
 //						changesValue(
 //								exp -> Timestamp.from(
