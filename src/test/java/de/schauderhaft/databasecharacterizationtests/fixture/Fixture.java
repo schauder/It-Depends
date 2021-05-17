@@ -25,7 +25,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 public class Fixture<T> {
 
-	final String database;
+	protected final String database;
 	public final FailureAssertion<T> failureAssertion;
 
 	public static <T> Fixture<T> f(String database) {
