@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.fixture;
+package de.schauderhaft.itdepends.fixture;
 
 import java.util.function.BiConsumer;
 
 /**
- * A {@link de.schauderhaft.databasecharacterizationtests.fixture.FailureAssertion} with explicitly provided description and {@link FailureAssertion}.
+ * A {@link de.schauderhaft.itdepends.fixture.FailureAssertion} with explicitly provided description and {@link FailureAssertion}.
  *
  * @param <T> type of the normally expected result.
  */

@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.support;
+package de.schauderhaft.itdepends.datasource;
 
-/**
- * Just a wrapper for a {@link String} that starts with an actual character.
- */
-public class TableName {
-	public final String name;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-	public static TableName of(String testName) {
-		return new TableName("T" + (((long)testName.hashCode()) - Integer.MIN_VALUE));
-	}
+import javax.sql.DataSource;
 
-	private TableName(String name) {
-		this.name = name;
-	}
-
+public class HsqlDbDataSourceFactory extends DataSourceFactory {
 	@Override
-	public String toString() {
-		return name;
+	DataSource createDataSource() {
+		return new EmbeddedDatabaseBuilder()
+				.setType(EmbeddedDatabaseType.HSQL)
+				.build();
 	}
 }

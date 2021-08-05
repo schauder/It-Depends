@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.fixture;
+package de.schauderhaft.itdepends.fixture;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.util.Throwables.*;

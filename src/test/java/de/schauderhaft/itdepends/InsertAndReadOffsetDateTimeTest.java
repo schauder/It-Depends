@@ -1,12 +1,11 @@
-package de.schauderhaft.databasecharacterizationtests;
+package de.schauderhaft.itdepends;
 
-import de.schauderhaft.databasecharacterizationtests.fixture.DescriptiveAssertion;
-import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
-import de.schauderhaft.databasecharacterizationtests.support.DbTest;
-import de.schauderhaft.databasecharacterizationtests.support.TableName;
+import de.schauderhaft.itdepends.fixture.DescriptiveAssertion;
+import de.schauderhaft.itdepends.fixture.Fixture;
+import de.schauderhaft.itdepends.support.DbTest;
+import de.schauderhaft.itdepends.support.TableName;
 import org.h2.api.TimestampWithTimeZone;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -17,8 +16,8 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.List;
 
-import static de.schauderhaft.databasecharacterizationtests.fixture.Fixture.*;
-import static de.schauderhaft.databasecharacterizationtests.fixture.ValueChange.*;
+import static de.schauderhaft.itdepends.fixture.Fixture.*;
+import static de.schauderhaft.itdepends.fixture.ValueChange.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;

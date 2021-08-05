@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.support;
+package de.schauderhaft.itdepends.fixture;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+/**
+ * Provides a test for what exactly is the result of a {@link Fixture} if does not deliver the "normal" result.
+ *
+ * @param <T> the type of the normal result.
+ */
+public interface FailureAssertion<T> {
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+	/**
+	 * a textual description of what happens in the fixture
+	 */
+	String description(T value);
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@ParameterizedTest
-@MethodSource
-@Tag("reporting")
-@ExtendWith(TableNameParameterResolver.class)
-public @interface DbTest {
+	/**
+	 * asserts that the result of the {@link Fixture} is it exactly what is expected by using AssertJ assertions.
+	 */
+	void assertFailure(T exp, Object actual);
 }

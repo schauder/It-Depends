@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.fixture;
+package de.schauderhaft.itdepends.datasource;
 
-/**
- * Provides a test for what exactly is the result of a {@link Fixture} if does not deliver the "normal" result.
- *
- * @param <T> the type of the normal result.
- */
-public interface FailureAssertion<T> {
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-	/**
-	 * a textual description of what happens in the fixture
-	 */
-	String description(T value);
+import javax.sql.DataSource;
 
-	/**
-	 * asserts that the result of the {@link Fixture} is it exactly what is expected by using AssertJ assertions.
-	 */
-	void assertFailure(T exp, Object actual);
+public class H2DataSourceFactory extends DataSourceFactory {
+	@Override
+	DataSource createDataSource() {
+		return new EmbeddedDatabaseBuilder()
+				.setType(EmbeddedDatabaseType.H2)
+				.build();
+	}
 }

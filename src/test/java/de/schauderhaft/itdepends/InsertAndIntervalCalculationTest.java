@@ -1,10 +1,10 @@
-package de.schauderhaft.databasecharacterizationtests;
+package de.schauderhaft.itdepends;
 
-import de.schauderhaft.databasecharacterizationtests.fixture.ExceptionAssertion;
-import de.schauderhaft.databasecharacterizationtests.fixture.FailureAssertion;
-import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
-import de.schauderhaft.databasecharacterizationtests.support.DbTest;
-import de.schauderhaft.databasecharacterizationtests.support.TableName;
+import de.schauderhaft.itdepends.fixture.ExceptionAssertion;
+import de.schauderhaft.itdepends.fixture.FailureAssertion;
+import de.schauderhaft.itdepends.fixture.Fixture;
+import de.schauderhaft.itdepends.support.DbTest;
+import de.schauderhaft.itdepends.support.TableName;
 import org.postgresql.util.PSQLException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,8 +13,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import static java.util.Arrays.*;

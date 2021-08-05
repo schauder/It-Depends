@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.datasource;
+package de.schauderhaft.itdepends.support;
 
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.support.TypeBasedParameterResolver;
 
-import javax.sql.DataSource;
-
-public class HsqlDbDataSourceFactory extends DataSourceFactory {
+public class TableNameParameterResolver extends TypeBasedParameterResolver<TableName> {
 	@Override
-	DataSource createDataSource() {
-		return new EmbeddedDatabaseBuilder()
-				.setType(EmbeddedDatabaseType.HSQL)
-				.build();
+	public TableName resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+		return TableName.of(extensionContext.getUniqueId());
 	}
 }

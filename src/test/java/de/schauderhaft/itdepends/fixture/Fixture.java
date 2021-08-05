@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.fixture;
+package de.schauderhaft.itdepends.fixture;
 
-import de.schauderhaft.databasecharacterizationtests.datasource.DataSources;
+import de.schauderhaft.itdepends.datasource.DataSources;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**

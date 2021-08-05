@@ -1,9 +1,9 @@
-package de.schauderhaft.databasecharacterizationtests;
+package de.schauderhaft.itdepends;
 
-import de.schauderhaft.databasecharacterizationtests.fixture.FailureAssertion;
-import de.schauderhaft.databasecharacterizationtests.fixture.Fixture;
-import de.schauderhaft.databasecharacterizationtests.support.DbTest;
-import de.schauderhaft.databasecharacterizationtests.support.TableName;
+import de.schauderhaft.itdepends.fixture.FailureAssertion;
+import de.schauderhaft.itdepends.fixture.Fixture;
+import de.schauderhaft.itdepends.support.DbTest;
+import de.schauderhaft.itdepends.support.TableName;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,7 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.math.BigInteger;
 import java.util.List;
 
-import static de.schauderhaft.databasecharacterizationtests.fixture.ValueChange.*;
+import static de.schauderhaft.itdepends.fixture.ValueChange.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;

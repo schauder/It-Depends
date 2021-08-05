@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.schauderhaft</groupId>
-	<artifactId>database-characterization-tests</artifactId>
+	<artifactId>it-depends</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>database-characterization-tests</name>
 	<description>Characterization Tests for Databases demonstrating various quirks of databases and their JDBC drivers

@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.schauderhaft.databasecharacterizationtests.datasource;
+package de.schauderhaft.itdepends.datasource;
 
-import org.postgresql.ds.PGSimpleDataSource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import com.mysql.cj.jdbc.MysqlDataSource;
+import org.testcontainers.containers.MySQLContainer;
 
 import javax.sql.DataSource;
 
-public class PostgreSqlDataSourceFactory extends DataSourceFactory {
+public class MySqlDataSourceFactory extends DataSourceFactory {
 
-	private static PostgreSQLContainer<?> POSTGRESQL_CONTAINER;
+	private static MySQLContainer<?> MYSQL_CONTAINER;
 
 	@Override
 	DataSource createDataSource() {
 
-		if (POSTGRESQL_CONTAINER == null) {
+		if (MYSQL_CONTAINER == null) {
 
-			PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:13.2");
+			MySQLContainer<?> container = new MySQLContainer<>("mysql:8.0.24");
 			container.start();
 
-			POSTGRESQL_CONTAINER = container;
+			MYSQL_CONTAINER = container;
 		}
 
-		PGSimpleDataSource dataSource = new PGSimpleDataSource();
-		dataSource.setUrl(POSTGRESQL_CONTAINER.getJdbcUrl());
-		dataSource.setUser(POSTGRESQL_CONTAINER.getUsername());
-		dataSource.setPassword(POSTGRESQL_CONTAINER.getPassword());
+		MysqlDataSource dataSource = new MysqlDataSource();
+		dataSource.setUrl(MYSQL_CONTAINER.getJdbcUrl());
+		dataSource.setUser(MYSQL_CONTAINER.getUsername());
+		dataSource.setPassword(MYSQL_CONTAINER.getPassword());
 
 		return dataSource;
 	}
