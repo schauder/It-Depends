@@ -21,7 +21,7 @@ import static java.util.Arrays.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 
-public class InsertAndIntervalCalculation {
+public class InsertAndIntervalCalculationTest {
 
 	@DbTest
 	void insertDateAfterCalculation(DateFixture fixture, TableName table) {
