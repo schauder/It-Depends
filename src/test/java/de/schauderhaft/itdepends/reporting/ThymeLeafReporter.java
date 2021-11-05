@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ThymeLeafReporter implements TestExecutionListener {
 
@@ -56,26 +54,18 @@ public class ThymeLeafReporter implements TestExecutionListener {
 			return;
 		}
 
-		String uniqueId = testIdentifier.getUniqueId();
-
-		Pattern pattern = Pattern.compile("\\[class:(.*)\\]/\\[test-template:(.*)\\(.*\\)\\]");
-		Matcher matcher = pattern.matcher(uniqueId);
-		if (!matcher.find()) {
+		final TestId testId = TestId.createFromUniqueId(testIdentifier.getUniqueId());
+		if (testId == null) {
 			return;
 		}
-		String className = matcher.group(1);
-		String methodName = matcher.group(2);
-
 		try {
-			String simpleName = Class.forName(className).getSimpleName();
-			String fileName = simpleName + "/" + methodName;
+			String fileName = testId.className + "/" + testId.name;
 
 
 			Context context = new Context();
 
 			String displayName = testIdentifier.getDisplayName();
 			context.setVariable("testName", displayName);
-
 
 			templateEngine.process("execution", context, createWriter(fileName));
 
