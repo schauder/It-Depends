@@ -20,6 +20,9 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.support.TypeBasedParameterResolver;
 
+/**
+ * Allows injection of a unique {@link TableName} per test.
+ */
 public class TableNameParameterResolver extends TypeBasedParameterResolver<TableName> {
 	@Override
 	public TableName resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
